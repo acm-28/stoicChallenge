@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge de 26 Días</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles and Tailwind Config -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #555;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+        /* Transition for page fade in/out */
+        .page {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .hidden-page {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            transform: scale(0.98);
+        }
+        /* Style for completed cards */
+        .completed-card {
+            opacity: 0.7;
+        }
+    </style>
+    <script>
+        // Extending Tailwind with dark mode configuration
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    // You can add custom theme properties here
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 antialiased">
+
+    <!-- Main Container -->
+    <div id="app-container" class="min-h-screen">
+        
+        <!-- Main Page: Grid of Challenges -->
+        <main id="main-page" class="page container mx-auto px-4 py-8">
+            <!-- Header Section -->
+            <header class="flex justify-between items-center mb-10">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">Challenge de 26 Días</h1>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1">Este es tu desafío de hoy. ¡A por ello!</p>
+                </div>
+                 <!-- Dark Mode Toggle Switch -->
+                <div class="flex items-center">
+                     <span class="text-sm text-gray-600 dark:text-gray-300 mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun-icon"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </span>
+                    <label for="theme-toggle" class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    </label>
+                     <span class="text-sm text-gray-600 dark:text-gray-300 ml-2">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </span>
+                </div>
+            </header>
+
+            <!-- Challenges Grid -->
+            <div id="challenges-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Challenge cards will be injected here by JavaScript -->
+            </div>
+        </main>
+
+        <!-- Detail Page -->
+        <section id="detail-page" class="page hidden-page fixed inset-0 overflow-y-auto">
+            <div id="detail-background" class="absolute inset-0 transition-all duration-500"></div>
+            <div class="relative min-h-full flex flex-col items-center justify-center p-6 sm:p-8">
+                 <!-- Back Button -->
+                <button id="back-button" class="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 dark:hover:bg-black/30 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    Volver
+                </button>
+                
+                <!-- Content -->
+                <div id="detail-content" class="w-full max-w-4xl bg-white/10 dark:bg-black/20 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/20">
+                    <!-- Detail content will be injected here -->
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- DATA: CHALLENGES ---
+        // Content extracted from the provided PDF document. Each object now includes a 'completed' state.
+        const challenges = [
+            { day: 1, title: "Agradecer & Disfrutar", description: "Durante el día prestar atención a todo lo que doy por sentado y podría estar agradeciendo, como salud, familia, amigos, mi casa, la vida en la tierra, etc y disfrutar de ellos.", gradient: "from-green-400 to-blue-500", completed: false },
+            { day: 2, title: "Amar mi destino/amor fati", description: "Aceptar y festejar cualquier cosa que acontezca. Mi destino es como mi esencia, mi cuerpo, mi mente, es parte de mi existencia. Es el complejo entramado de causalidades que forman mi experiencia de vida y la convierten en única. Todo lo que suceda es algo bueno para mí, todo me permite practicar alguna virtud (paciencia, aceptación, coraje, respeto, foco, etc.).", gradient: "from-purple-500 to-pink-500", completed: false },
+            { day: 3, title: "Hablar y pensar como un estoico", description: "No hablar demasiado de mí mismo, no criticar a otras personas (salvo que sea de forma constructiva), no hablar de banalidades, hablar de temas que aporten valor a las personas. Para lograr esto, debo llevar mis pensamientos de la misma manera.", gradient: "from-slate-500 to-slate-800", completed: false },
+            { day: 4, title: "Actitud de paz interior", description: "Mantener lo más que pueda en el día el sentimiento de paz interior en el plexo solar, sentir esa tranquilidad en el cuerpo.", gradient: "from-sky-400 to-cyan-300", completed: false },
+            { day: 5, title: "Entrenar la empatía", description: "Prestar especial atención a cada conversación del día. Ser paciente, e incisivo para entender lo más que se pueda la comprensión de la realidad que tiene la persona enfrente, el porqué de su comportamiento. ¿Qué la mueve? ¿Cuáles son sus objetivos y miedos? ¿Cuáles son sus juicios y creencias? ¿Cuál es su historia personal?", gradient: "from-orange-400 to-yellow-400", completed: false },
+            { day: 6, title: "Abrazar cada sentimiento", description: "Buscar sentir plenamente cada incomodidad física (cansancio, malestar) y psicológica (aburrimiento x ej) del día. Prestarles mucha atención y no resistirse a ellas, sino aceptarlas. Lo mismo con cualquier sentimiento que tenga, hasta los instintivos.", gradient: "from-rose-400 to-red-500", completed: false },
+            { day: 7, title: "Memento Mori", description: "Durante el día recordar que podría morirme al día siguiente, o en la próxima hora. Valorar cada encuentro con personas, cada tarea que realizo, cada respiración ya que podría ser la última.", gradient: "from-gray-700 to-gray-900", completed: false },
+            { day: 8, title: "Reconociendo la realidad", description: "Buscar prestar especial atención al mecanismo sistémico de la realidad, impredecible para mi capacidad humana. Razonar al respecto y buscar identificar ejemplos en el día, por ejemplo: la naturaleza del planeta y el universo, las leyes físicas, nuestra biología, el entrelazamiento de acontecimientos, el espacio físico en el cual me encuentro etc.", gradient: "from-indigo-500 to-blue-600", completed: false },
+            { day: 9, title: "Lo que importa es la actitud", description: "Poner foco durante el día en la actitud con la cual realizo las cosas. Generar esa fuerza interior por dar lo mejor de mí. Buscar conscientemente la motivación en cada tarea que realizo y el disfrute al realizarla. ¿Para qué hago esto? ¿qué tiene de bueno? Si cocino por ej. lo hago para alimentarme sanamente a mí y a mi familia, si ordeno es para fomentar un gran hábito y generar un sentimiento de paz al ver la casa ordenada, etc.", gradient: "from-amber-400 to-orange-500", completed: false },
+            { day: 10, title: "Sentir plenamente mi cuerpo", description: "Prestar especial atención a mi biología: mis sentidos, mi respiración, mi estado emocional y mental, mis movimientos.", gradient: "from-teal-400 to-emerald-500", completed: false },
+            { day: 11, title: "Amar los obstáculos y generar estados de flujo", description: "Entusiasmarme por cada desafío que encuentre en el día y generar estados de flujo en las actividades que realizo, fijar pequeñas metas y concentrarme en mi desempeño dentro de mis tareas de trabajo, conversaciones, etc.", gradient: "from-red-500 to-orange-500", completed: false },
+            { day: 12, title: "No tengo que probarle nada a nadie", description: "Durante el día repetir pensamientos que me permitan comprender que no tengo nada que probar, nada que mejorar, no hay ningún lugar al cual llegar, nadie a quién ganarle ni impresionar, ningún resultado que lograr. No hay presión que sea necesaria, el estado de relax es el más razonable.", gradient: "from-cyan-500 to-blue-500", completed: false },
+            { day: 13, title: "Amar la vida simple", description: "Prestar especial atención durante el día al disfrute que genero con lo que ya tengo y fortalecer una mentalidad lo más satisfecha posible con el presente. Buscar activamente el asombro, curiosidad, disfrute y diversión en lo normal y habitual de mi vida.", gradient: "from-lime-400 to-green-500", completed: false },
+            { day: 14, title: "Terapia de la insignificancia cósmica", description: "Recordar durante el día lo insignificante que soy en comparación con la infinita vastedad del universo. Y con esto soltar el gran peso de tomarse todo tan en serio, incluso a mí mismo.", gradient: "from-violet-600 to-indigo-800", completed: false },
+            { day: 15, title: "Festejar las pequeñas victorias", description: "Celebrar durante el día cada tarea realizada, cada logro y esfuerzo realizado, sin importar si es grande o chico. Festejarlos a todos por igual.", gradient: "from-yellow-300 to-orange-400", completed: false },
+            { day: 16, title: "Construir con cada acción", description: "Tomar consciencia durante el día de cómo mediante cada acción que realizo mejoro mi comportamiento, voy construyendo proyectos, hábitos, salud y habilidades. Cómo con cada pensamiento voy moldeando mi mindset y como con cada emoción voy generando bienestar.", gradient: "from-sky-500 to-indigo-500", completed: false },
+            { day: 17, title: "Cultivar la paciencia", description: "Practicar la paciencia en cada oportunidad que tenga en el día. Esperar a cada semáforo, escuchar sin interrumpir a otras personas, realizar cada tarea con calma y tomarme más tiempo de lo habitual para cada una, etc.", gradient: "from-stone-400 to-stone-600", completed: false },
+            { day: 18, title: "Pensamientos positivos", description: "Durante el día rememorar situaciones positivas, pensar lo mejor de cada interacción que tenga con las personas, ver el lado positivo a cada situación dada e imaginar escenarios positivos a futuro.", gradient: "from-pink-400 to-rose-400", completed: false },
+            { day: 19, title: "Práctica del orden", description: "Prestar especial atención durante el día a mantener mi entorno lo más ordenado posible y disfrutar de la armonía que se genera en el espacio.", gradient: "from-fuchsia-500 to-purple-600", completed: false },
+            { day: 20, title: "Instantes de presencia", description: "Generar pequeños espacios de tiempo en los cuales busque tener una presencia intensa. No importa si la tarea que esté realizando es irrelevante, puedo estar caminando en la calle, trabajando, limpiando, etc. El objetivo es concentrarme fuertemente durante pequeños instantes.", gradient: "from-cyan-300 to-blue-400", completed: false },
+            { day: 21, title: "Seek discomfort", description: "Buscar conscientemente la incomodidad con desafíos que amplíen mi zona de confort, mentalizando en cada momento del esfuerzo la habilidad que estoy mejorando, los resultados a los cuales estoy contribuyendo, el mindset que estoy entrenando. Per aspera ad astra.", gradient: "from-red-600 to-yellow-500", completed: false },
+            { day: 22, title: "Reeducando a mi ego", description: "Entender que mi valía personal está completamente desconectada al accionar de otras personas, no puedo medirla ni compararla con nadie, por lo tanto no tengo porqué sentirme amenazado. Prestar mucha atención a pensamientos de comparación y competencia innecesaria.", gradient: "from-blue-700 to-blue-900", completed: false },
+            { day: 23, title: "Antifrágil", description: "Prestar mucha atención a mi actitud frente a cualquier comentario de otras personas o situación que se genere, mantenerme impecable, blindado ante la fragilidad y el drama innecesario.", gradient: "from-neutral-500 to-stone-700", completed: false },
+            { day: 24, title: "Reforzar la confianza", description: "Poner mucho énfasis durante el día en la confianza en mí mismo y en no cuestionar mis acciones, mis roles, mi capacidad, mis creencias, etc.", gradient: "from-emerald-500 to-green-600", completed: false },
+            { day: 25, title: "Mirada lógico-racional", description: "Ver cada situación de la realidad y acciones que realicen otros por los hechos que puedo percibir, sin emitir juicios de valor. Racionalizar y buscar el sentido lógico a cada situación. Ser consciente de las limitaciones de mis propias interpretaciones.", gradient: "from-indigo-400 to-purple-500", completed: false },
+            { day: 26, title: "Influir positivamente en otros", description: "Buscar la manera de aportar valor a otros, potenciarlos, compartirles pensamientos generadores, alentarlos en sus objetivos, etc. También identificar todo el valor que aporto como persona a otros y la sociedad misma.", gradient: "from-teal-300 to-sky-400", completed: false }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        const challengesGrid = document.getElementById('challenges-grid');
+        const mainPage = document.getElementById('main-page');
+        const detailPage = document.getElementById('detail-page');
+        const detailBackground = document.getElementById('detail-background');
+        const detailContent = document.getElementById('detail-content');
+        const backButton = document.getElementById('back-button');
+
+        // --- PROGRESS MANAGEMENT ---
+        const PROGRESS_KEY = 'challengeProgress';
+
+        function loadProgress() {
+            const savedProgress = JSON.parse(localStorage.getItem(PROGRESS_KEY));
+            if (savedProgress) {
+                challenges.forEach(challenge => {
+                    if (savedProgress[challenge.day]) {
+                        challenge.completed = true;
+                    }
+                });
+            }
+        }
+
+        function saveProgress() {
+            const progressToSave = challenges.reduce((acc, challenge) => {
+                if (challenge.completed) {
+                    acc[challenge.day] = true;
+                }
+                return acc;
+            }, {});
+            localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressToSave));
+        }
+
+        // --- UI RENDERING ---
+        function renderChallenges() {
+            challengesGrid.innerHTML = ''; // Clear existing cards
+
+            // Find the first uncompleted challenge. This will be our "current" challenge.
+            const currentChallenge = challenges.find(challenge => !challenge.completed);
+            const currentChallengeDay = currentChallenge ? currentChallenge.day : null;
+
+            challenges.forEach(challenge => {
+                const card = document.createElement('div');
+                
+                // Base classes for all cards
+                let cardClasses = 'challenge-card relative cursor-pointer group bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-2 dark:border-gray-700 transition-all duration-300 transform';
+
+                // Add style for completed cards
+                if (challenge.completed) {
+                    cardClasses += ' completed-card border-transparent';
+                } else if (challenge.day === currentChallengeDay) {
+                    // **FIX**: Current challenge gets highlighted with blue in light mode and orange in dark mode.
+                    cardClasses += ' border-blue-500 dark:border-orange-500 shadow-lg shadow-blue-500/30 dark:shadow-orange-500/20 -translate-y-1 scale-105';
+                } else {
+                    // Other non-completed cards get a simple hover effect and transparent border
+                    cardClasses += ' border-transparent hover:-translate-y-2';
+                }
+                
+                card.className = cardClasses;
+                card.dataset.day = challenge.day;
+
+                card.innerHTML = `
+                    ${challenge.completed ? '<div class="absolute top-3 right-3 text-green-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>' : ''}
+                    <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br ${challenge.gradient} mb-4 transition-all duration-300 group-hover:scale-110">
+                        <span class="text-xl font-bold text-white">${challenge.day}</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">${challenge.title}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">${challenge.description}</p>
+                `;
+                
+                card.addEventListener('click', () => {
+                    const selectedChallenge = challenges.find(c => c.day == card.dataset.day);
+                    showDetailPage(selectedChallenge);
+                });
+
+                challengesGrid.appendChild(card);
+            });
+        }
+
+        // --- THEME SWITCHER LOGIC ---
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                htmlElement.classList.add('dark');
+                themeToggle.checked = true;
+            } else {
+                htmlElement.classList.remove('dark');
+                themeToggle.checked = false;
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = htmlElement.classList.toggle('dark');
+            const newTheme = isDark ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        }
+
+        // --- NAVIGATION & ACTIONS ---
+        function showDetailPage(challenge) {
+            detailContent.innerHTML = `
+                <p class="text-lg font-semibold text-white/80 mb-2">Día ${challenge.day}</p>
+                <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">${challenge.title}</h2>
+                <p class="text-white/90 text-lg md:text-xl leading-relaxed">${challenge.description}</p>
+                <button id="toggle-complete-btn" class="mt-8 w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-base font-semibold transition-colors ${
+                    challenge.completed 
+                    ? 'bg-yellow-400 hover:bg-yellow-500 text-gray-900' 
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }">
+                ${challenge.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
+                </button>
+            `;
+            detailBackground.className = `absolute inset-0 transition-all duration-500 bg-gradient-to-br ${challenge.gradient}`;
+
+            document.getElementById('toggle-complete-btn').addEventListener('click', () => {
+                toggleComplete(challenge.day);
+            });
+            
+            mainPage.classList.add('hidden-page');
+            detailPage.classList.remove('hidden-page');
+            backButton.focus();
+        }
+        
+        function showMainPage() {
+            renderChallenges(); // Re-render cards to show latest status
+            detailPage.classList.add('hidden-page');
+            mainPage.classList.remove('hidden-page');
+        }
+
+        function toggleComplete(day) {
+            const challenge = challenges.find(c => c.day === day);
+            if (challenge) {
+                challenge.completed = !challenge.completed;
+                saveProgress();
+
+                // Update button on detail page without full reload
+                const button = document.getElementById('toggle-complete-btn');
+                if (challenge.completed) {
+                    button.textContent = 'Marcar como pendiente';
+                    button.className = button.className.replace('bg-green-500 hover:bg-green-600 text-white', 'bg-yellow-400 hover:bg-yellow-500 text-gray-900');
+                } else {
+                    button.textContent = 'Marcar como completado';
+                    button.className = button.className.replace('bg-yellow-400 hover:bg-yellow-500 text-gray-900', 'bg-green-500 hover:bg-green-600 text-white');
+                }
+            }
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Load saved progress
+            loadProgress();
+            
+            // 2. Render Challenge Cards
+            renderChallenges();
+
+            // 3. Set Initial Theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+
+            // 4. Add Event Listeners
+            themeToggle.addEventListener('change', toggleTheme);
+            backButton.addEventListener('click', showMainPage);
+        });
+
+    </script>
+</body>
+</html>
